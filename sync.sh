@@ -25,9 +25,9 @@ sync_dir() {
     if [[ -d "$src" ]]; then
         mkdir -p "$dst"
         if $DRY_RUN; then
-            rsync -a --delete --dry-run "$src" "$dst"
+            rsync -a --no-links --delete --dry-run "$src" "$dst"
         else
-            rsync -a --delete "$src" "$dst"
+            rsync -a --no-links --delete "$src" "$dst"
         fi
     fi
 }
