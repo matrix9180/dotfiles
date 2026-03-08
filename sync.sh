@@ -48,7 +48,7 @@ sync_file() {
 echo "Syncing config files..."
 
 # Full directory mirrors
-for dir in hypr waybar alacritty kitty ghostty mako swayosd omarchy walker; do
+for dir in hypr waybar alacritty kitty ghostty mako swayosd omarchy walker uwsm; do
     sync_dir "$dir"
 done
 
