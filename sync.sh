@@ -71,4 +71,4 @@ git add -A
 git commit -m "chore: sync omarchy config $(date '+%Y-%m-%d %H:%M')"
 git push
 
-echo "Done: dotfiles synced and pushed."
+echo "Done: dotfiles synced and committed."
