@@ -1,0 +1,28 @@
+#!/bin/bash
+# Toggle lid-close sleep inhibition.
+# When active: closing the lid won't suspend the system for up to TIMEOUT_MINUTES.
+# Auto-cancels when the lid is opened (so reclosing sleeps normally).
+
+INHIBIT_PID_FILE="/tmp/lid-sleep-inhibit.pid"
+TIMEOUT_MINUTES=5
+
+inhibit_active() {
+    [[ -f "$INHIBIT_PID_FILE" ]] && kill -0 "$(cat "$INHIBIT_PID_FILE")" 2>/dev/null
+}
+
+if inhibit_active; then
+    kill "$(cat "$INHIBIT_PID_FILE")" 2>/dev/null
+    rm -f "$INHIBIT_PID_FILE"
+    notify-send "Lid Sleep" "OFF — lid close will suspend normally" \
+        --icon=computer --urgency=low
+else
+    systemd-inhibit \
+        --what=handle-lid-switch \
+        --who="Lid Sleep Toggle" \
+        --why="Manual lid-close sleep override" \
+        sleep $((TIMEOUT_MINUTES * 60)) &
+    disown $!
+    echo $! > "$INHIBIT_PID_FILE"
+    notify-send "Lid Sleep" "ON — lid close stays awake (${TIMEOUT_MINUTES}min timeout)" \
+        --icon=computer --urgency=normal
+fi

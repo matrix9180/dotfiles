@@ -45,6 +45,24 @@ sync_file() {
     fi
 }
 
+sync_local_bin() {
+    local src="$HOME/.local/bin"
+    local dst="$DOTFILES/local-bin"
+    mkdir -p "$dst"
+    # Only sync shell scripts (skip binaries like uv/uvx)
+    for f in "$src"/*; do
+        [[ -f "$f" ]] || continue
+        head -c 12 "$f" | grep -q "^#!" || continue   # must have shebang
+        file "$f" | grep -q "ELF\|binary" && continue  # skip compiled binaries
+        name="$(basename "$f")"
+        if $DRY_RUN; then
+            echo "would copy: $f -> $dst/$name"
+        else
+            cp "$f" "$dst/$name"
+        fi
+    done
+}
+
 echo "Syncing config files..."
 
 # Full directory mirrors
@@ -54,6 +72,9 @@ done
 
 # Single top-level files
 sync_file "starship.toml"
+
+# Custom scripts (shell only, not compiled binaries)
+sync_local_bin
 
 if $DRY_RUN; then
     echo "Dry run complete. No changes committed."

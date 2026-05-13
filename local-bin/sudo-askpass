@@ -1,0 +1,2 @@
+#!/bin/bash
+zenity --password --title="sudo" --text="${1:-Password required for sudo:}"
